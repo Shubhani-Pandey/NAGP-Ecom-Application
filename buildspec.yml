@@ -14,12 +14,12 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image... 
-      - docker compose build         
+      - docker-compose build         
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker compose push
+      - docker-compose push
       - echo Writing image definitions file...
       - printf '[{"name”:"nagp_ecom_application","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - cat imagedefinitions.json
