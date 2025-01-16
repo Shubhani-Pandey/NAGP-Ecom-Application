@@ -9,7 +9,7 @@ services:
     build:
       context: ./user-service
       dockerfile: Dockerfile
-    image: nagp_ecom_application/user-service:latest 
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/user-service:latest 
     ports:
       - "5001:5001"
     restart: always
@@ -19,7 +19,7 @@ services:
     build:
       context: ./product-service
       dockerfile: Dockerfile
-    image: nagp_ecom_application/product-service:latest  
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/product-service:latest  
     ports:
       - "5002:5002"
     restart: always
@@ -29,7 +29,7 @@ services:
     build:
       context: ./order-service
       dockerfile: Dockerfile
-    image: nagp_ecom_application/order-service:latest  
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/order-service:latest  
     ports:
       - "5003:5003"
     restart: always
