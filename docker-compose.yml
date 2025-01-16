@@ -6,27 +6,30 @@ volumes:
 services:
   user-service:
     container_name: user-service-c
-    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/user-service:latest 
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application/user-service:latest 
     ports:
       - "5001:5001"
-    volumes:
-      - userapp:/userapp
     restart: always
 
   product-service:
     container_name: product-service-c
-    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/product-service:latest  
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application/product-service:latest  
     ports:
       - "5002:5002"
-    volumes:
-      - productapp:/productapp
     restart: always
 
   order-service:
     container_name: order-service-c
-    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/order-service:latest  
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application/order-service:latest  
     ports:
       - "5003:5003"
-    volumes:
-      - orderapp:/orderapp
     restart: always
