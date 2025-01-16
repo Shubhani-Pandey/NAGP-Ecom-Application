@@ -2,10 +2,13 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
+
       - aws --version
+      - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 339712795299.dkr.ecr.ap-south-1.amazonaws.com
+      - echo Setting Repo URI...
       - REPOSITORY_URI=339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application
+      - echo declaring image tag
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
