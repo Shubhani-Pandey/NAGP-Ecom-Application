@@ -6,7 +6,7 @@ volumes:
 services:
   user-service:
     container_name: user-service-c
-    image: ./user-service:latest 
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/user-service:latest 
     ports:
       - "5001:5001"
     volumes:
@@ -15,7 +15,7 @@ services:
 
   product-service:
     container_name: product-service-c
-    image: ./product-service:latest  
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/product-service:latest  
     ports:
       - "5002:5002"
     volumes:
@@ -24,7 +24,7 @@ services:
 
   order-service:
     container_name: order-service-c
-    image: ./order-service:latest  
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/order-service:latest  
     ports:
       - "5003:5003"
     volumes:
