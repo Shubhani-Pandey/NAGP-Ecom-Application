@@ -9,7 +9,6 @@ phases:
       - echo Setting Repo URI...
       - REPOSITORY_URI=339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application
       - echo declaring image tag
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
       - echo Build started on `date`
@@ -25,7 +24,7 @@ phases:
       - echo Listing Docker images after push...
       - docker images
       - echo Writing image definitions file...
-      - printf '[{"name":"nagp_ecom_application","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"nagp_ecom_application","imageUri":"%s"}]' $REPOSITORY_URI:user-service-latest  > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
   files: imagedefinitions.json
