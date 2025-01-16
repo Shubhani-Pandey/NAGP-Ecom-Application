@@ -4,12 +4,11 @@ volumes:
   userapp:
   productapp:
   orderapp:
-  frontendapp:
 
 services:
   user-service:
     container_name: user-service-c
-    image: allergysnip/user-service:latest  # Use the image from Docker Hub
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application/user-service:latest 
     ports:
       - "5001:5001"
     volumes:
@@ -18,7 +17,7 @@ services:
 
   product-service:
     container_name: product-service-c
-    image: allergysnip/product-service:latest  # Use the image from Docker Hub
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application/product-service:latest  
     ports:
       - "5002:5002"
     volumes:
@@ -27,18 +26,9 @@ services:
 
   order-service:
     container_name: order-service-c
-    image: allergysnip/order-service:latest  # Use the image from Docker Hub
+    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application/order-service:latest  
     ports:
       - "5003:5003"
     volumes:
       - orderapp:/orderapp
-    restart: always
-
-  frontend-service:
-    container_name: frontend-service-c
-    image: allergysnip/frontend-service:latest  # Use the image from Docker Hub
-    ports:
-      - "5000:5000"
-    volumes:
-      - frontendapp:/frontendapp
     restart: always
