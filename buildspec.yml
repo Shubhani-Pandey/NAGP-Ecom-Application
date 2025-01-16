@@ -24,7 +24,7 @@ phases:
       - echo Listing Docker images after push...
       - docker images
       - echo Writing image definitions file...
-      - printf '[{"name":"nagp_ecom_application","imageUri":"%s"}]' $REPOSITORY_URI:user-service-latest  > imagedefinitions.json
+      - printf '[{"name":"nagp_ecom_application","imageUri":"%s"}]' $REPOSITORY_URI:user-service  > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
   files: imagedefinitions.json
