@@ -2,6 +2,7 @@ volumes:
   userapp:
   productapp:
   orderapp:
+  cartapp:
 
 services:
   user-service:
@@ -24,6 +25,16 @@ services:
       - "5002:5002"
     restart: always
 
+  cart-service:
+    container_name: cart-service-c
+    build:
+      context: ./cart-service
+      dockerfile: Dockerfile
+    image: 816069131853.dkr.ecr.eu-north-1.amazonaws.com/ecom/ecom_backend:cart-service_latest  
+    ports:
+      - "5003:5003"
+    restart: always
+
   order-service:
     container_name: order-service-c
     build:
@@ -31,5 +42,6 @@ services:
       dockerfile: Dockerfile
     image: 816069131853.dkr.ecr.eu-north-1.amazonaws.com/ecom/ecom_backend:order-service_latest  
     ports:
-      - "5003:5003"
+      - "5004:5004"
     restart: always
+	
