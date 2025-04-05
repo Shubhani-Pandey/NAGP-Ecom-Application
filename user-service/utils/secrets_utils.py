@@ -12,6 +12,13 @@ def get_secret(secret_name):
     session = boto3.session.Session()
     client = session.client('secretsmanager')
 
+
+
+    print('cognito_secret',os.environ.get('cognito_secret'))
+    print('dynamo_db_secret',os.environ.get('dynamo_db_secret'))
+    print('opensearch_secret',os.environ.get('opensearch_secret'))
+    print('rds_secret',os.environ.get('rds_secret'))
+
     try:
         response = client.get_secret_value(SecretId=secret_name)
         return json.loads(response['SecretString'])
