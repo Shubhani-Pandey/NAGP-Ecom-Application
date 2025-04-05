@@ -1,0 +1,35 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+
+      - aws --version
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 816069131853.dkr.ecr.eu-north-1.amazonaws.com
+      - echo Setting Repo URI...
+      - REPOSITORY_URI=816069131853.dkr.ecr.eu-north-1.amazonaws.com/ecom/ecom_backend
+      - echo declaring image tag
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image... 
+      - docker-compose build   
+      - echo Listing Docker images...
+      - docker images      
+      - docker tag $REPOSITORY_URI:user-service_latest  $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:product-service_latest  $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:order-service_latest  $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker-compose push
+      - echo Listing Docker images after push...
+      - DOCKER_CONTAINER_NAME= ecomcontainer
+      - docker images
+      - echo Writing image definitions file...
+      - printf '[{"name”:"nagp_ecom_application","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME  $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json
+artifacts:
+  files: imagedefinitions.json
