@@ -13,6 +13,7 @@ from utils.metrics import MetricsCollector
 from flask_cors import CORS
 from botocore.exceptions import ClientError
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -258,4 +259,8 @@ def circuit_breaker_metrics():
 
 if __name__ == '__main__':
     init_user_db()
+    print('cognito_secret',os.environ.get('cognito_secret'))
+    print('dynamo_db_secret',os.environ.get('dynamo_db_secret'))
+    print('opensearch_secret',os.environ.get('opensearch_secret'))
+    print('rds_secret',os.environ.get('rds_secret'))
     app.run(host='0.0.0.0', port=5001, debug=True)
