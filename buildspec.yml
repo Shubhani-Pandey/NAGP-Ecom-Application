@@ -5,9 +5,9 @@ phases:
 
       - aws --version
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 339712795299.dkr.ecr.ap-south-1.amazonaws.com
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 816069131853.dkr.ecr.eu-north-1.amazonaws.com
       - echo Setting Repo URI...
-      - REPOSITORY_URI=339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application
+      - REPOSITORY_URI=816069131853.dkr.ecr.eu-north-1.amazonaws.com/ecom/ecom_backend
       - echo declaring image tag
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
@@ -17,6 +17,9 @@ phases:
       - docker-compose build   
       - echo Listing Docker images...
       - docker images      
+      - docker tag $REPOSITORY_URI:user-service_latest  $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:product-service_latest  $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:order-service_latest  $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
