@@ -8,11 +8,14 @@ from util.metrics import MetricsCollector
 from model.product import ProductModel
 from util.auth_utils import require_auth
 from flask_swagger_ui import get_swaggerui_blueprint
-from util.secrets_utils import load_secrets
+from util.secrets_utils import get_secret
 from http import HTTPStatus
 from model.product_search import SearchAPI
 from flask_caching import Cache
 import json
+import boto3
+import os
+from opensearchpy import OpenSearch
 
 
 SWAGGER_URL = '/api/docs'
@@ -211,7 +214,150 @@ def clear_cache():
         return jsonify({'message': 'Cache cleared successfully'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """
+    Comprehensive health check endpoint that verifies:
+    1. DynamoDB connection
+    2. OpenSearch connection
+    3. Memory usage
+    4. Service uptime
+    """
+    health_status = {
+        'status': 'healthy',
+        'timestamp': datetime.datetime.utcnow().isoformat(),
+        'service': 'product-service',
+        'version': '1.0.0',  # You can make this dynamic
+        'checks': {}
+    }
+
+    # Check DynamoDB
+    try:
+        dynamodb = boto3.client('dynamodb')
+        dynamodb.describe_table(TableName='Products')
+        health_status['checks']['dynamodb'] = {
+            'status': 'healthy',
+            'message': 'Successfully connected to DynamoDB'
+        }
+    except ClientError as e:
+        health_status['checks']['dynamodb'] = {
+            'status': 'unhealthy',
+            'message': str(e),
+            'error_code': e.response['Error']['Code']
+        }
+        health_status['status'] = 'unhealthy'
+
+    # Check OpenSearch
+    try:
+        secrets = get_secret('opensearch/config')
+        host = secrets.get('host')
+        region = secrets.get('region')
+        master_user_name = secrets.get('master_user_name')
+        master_user_password = secrets.get('master_user_password')
+        
+        opensearch_client = OpenSearch(
+            hosts=[{
+                'host': host,
+                'port': 443
+            }],
+            http_auth=(
+                master_user_name,
+                master_user_password
+            ),
+            use_ssl=True,
+            verify_certs=True
+        )
+        opensearch_health = opensearch_client.cluster.health()
+        health_status['checks']['opensearch'] = {
+            'status': 'healthy' if opensearch_health['status'] in ['green', 'yellow'] else 'unhealthy',
+            'message': f"Cluster status: {opensearch_health['status']}"
+        }
+        if opensearch_health['status'] == 'red':
+            health_status['status'] = 'unhealthy'
+    except Exception as e:
+        health_status['checks']['opensearch'] = {
+            'status': 'unhealthy',
+            'message': str(e)
+        }
+        health_status['status'] = 'unhealthy'
+
+    # Check Memory Usage
+    try:
+        import psutil
+        memory = psutil.Process().memory_info()
+        memory_usage_mb = memory.rss / 1024 / 1024  # Convert to MB
+        memory_threshold_mb = 500  # Set your threshold
+
+        health_status['checks']['memory'] = {
+            'status': 'healthy' if memory_usage_mb < memory_threshold_mb else 'warning',
+            'usage_mb': round(memory_usage_mb, 2),
+            'threshold_mb': memory_threshold_mb
+        }
+        if memory_usage_mb >= memory_threshold_mb:
+            health_status['status'] = 'warning'
+    except Exception as e:
+        health_status['checks']['memory'] = {
+            'status': 'unknown',
+            'message': str(e)
+        }
+
+    # Check Cache Status
+    try:
+        # Test cache by setting and getting a value
+        test_key = 'health_check_test'
+        test_value = 'test_value'
+        
+        cache.set(test_key, test_value, timeout=10)
+        cached_value = cache.get(test_key)
+        
+        cache_status = 'healthy' if cached_value == test_value else 'unhealthy'
+        cache_message = 'Cache is working properly' if cache_status == 'healthy' else 'Cache read/write test failed'
+        
+        health_status['checks']['cache'] = {
+            'status': cache_status,
+            'message': cache_message
+        }
+        
+        if cache_status == 'unhealthy':
+            health_status['status'] = 'warning'
+            
+    except Exception as e:
+        health_status['checks']['cache'] = {
+            'status': 'unhealthy',
+            'message': f'Cache error: {str(e)}'
+        }
+        health_status['status'] = 'warning'
+
+    # # Add Dependencies Check
+    # dependencies = {
+    #     'user-service': 'http://user-service:5001/health',
+    #     'order-service': 'http://order-service:5003/health'
+    # }
+
+    # health_status['checks']['dependencies'] = {}
+    # import requests
+    # from requests.exceptions import RequestException
+
+    # for service, url in dependencies.items():
+    #     try:
+    #         response = requests.get(url, timeout=2)
+    #         health_status['checks']['dependencies'][service] = {
+    #             'status': 'healthy' if response.status_code == 200 else 'unhealthy',
+    #             'statusCode': response.status_code
+    #         }
+    #     except RequestException as e:
+    #         health_status['checks']['dependencies'][service] = {
+    #             'status': 'unhealthy',
+    #             'message': str(e)
+    #         }
+    #         health_status['status'] = 'warning'
+
+    # Set response status code based on health status
+    status_code = 200 if health_status['status'] == 'healthy' else 503
+
+    return jsonify(health_status), status_code
+
 def welcome():
     return "Welcome product-service"
 

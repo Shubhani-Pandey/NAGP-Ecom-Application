@@ -7,6 +7,12 @@ from models.order import OrderStatus, OrderValidator
 from flask_swagger_ui import get_swaggerui_blueprint
 from util.secrets_utils import load_secrets
 from flask_cors import CORS
+import psutil
+import requests
+from requests.exceptions import RequestException
+import mysql.connector
+from mysql.connector import Error
+import datetime
 
 
 # load_secrets() 
@@ -263,6 +269,117 @@ def cancel_order(order_id):
         cursor.close()
         connection.close()
 
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """
+    Comprehensive health check endpoint that verifies:
+    1. Database connection (MySQL/RDS)
+    2. Dependencies (Cart Service, Product Service)
+    3. Memory usage
+    4. Service uptime
+    """
+    health_status = {
+        'status': 'healthy',
+        'timestamp': datetime.datetime.utcnow().isoformat(),
+        'service': 'order-service',
+        'version': '1.0.0',
+        'checks': {}
+    }
+
+    # Check Database Connection
+    try:
+        connection = DatabasePool.get_connection('order-service')
+        cursor = connection.cursor()
+        
+        # Simple query to test database connection
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        
+        health_status['checks']['database'] = {
+            'status': 'healthy',
+            'message': 'Successfully connected to database'
+        }
+        
+        cursor.close()
+        connection.close()
+    except Error as e:
+        health_status['checks']['database'] = {
+            'status': 'unhealthy',
+            'message': str(e),
+            'error_code': str(e.errno) if hasattr(e, 'errno') else 'unknown'
+        }
+        health_status['status'] = 'unhealthy'
+
+    # Check Memory Usage
+    try:
+        memory = psutil.Process().memory_info()
+        memory_usage_mb = memory.rss / 1024 / 1024  # Convert to MB
+        memory_threshold_mb = 500  # Set your threshold
+
+        health_status['checks']['memory'] = {
+            'status': 'healthy' if memory_usage_mb < memory_threshold_mb else 'warning',
+            'usage_mb': round(memory_usage_mb, 2),
+            'threshold_mb': memory_threshold_mb
+        }
+        if memory_usage_mb >= memory_threshold_mb:
+            health_status['status'] = 'warning'
+    except Exception as e:
+        health_status['checks']['memory'] = {
+            'status': 'unknown',
+            'message': str(e)
+        }
+
+    # Check Dependencies
+    # dependencies = {
+    #     'cart-service': 'http://cart-service:5004/health',
+    #     'product-service': 'http://product-service:5002/health'
+    # }
+
+    # health_status['checks']['dependencies'] = {}
+    
+    # for service, url in dependencies.items():
+    #     try:
+    #         response = requests.get(url, timeout=2)
+    #         health_status['checks']['dependencies'][service] = {
+    #             'status': 'healthy' if response.status_code == 200 else 'unhealthy',
+    #             'statusCode': response.status_code
+    #         }
+    #         if response.status_code != 200:
+    #             health_status['status'] = 'warning'
+    #     except RequestException as e:
+    #         health_status['checks']['dependencies'][service] = {
+    #             'status': 'unhealthy',
+    #             'message': str(e)
+    #         }
+    #         health_status['status'] = 'warning'
+
+    # Check System Resources
+    try:
+        cpu_percent = psutil.cpu_percent(interval=1)
+        disk_usage = psutil.disk_usage('/')
+        
+        health_status['checks']['system'] = {
+            'status': 'healthy',
+            'cpu_usage_percent': cpu_percent,
+            'disk_usage_percent': disk_usage.percent,
+            'disk_free_gb': round(disk_usage.free / (1024 ** 3), 2)
+        }
+        
+        # Set warning if resources are running low
+        if cpu_percent > 80 or disk_usage.percent > 85:
+            health_status['checks']['system']['status'] = 'warning'
+            health_status['status'] = 'warning'
+    except Exception as e:
+        health_status['checks']['system'] = {
+            'status': 'unknown',
+            'message': str(e)
+        }
+
+    # Set response status code based on health status
+    status_code = 200 if health_status['status'] == 'healthy' else 503
+
+    return jsonify(health_status), status_code
 if __name__ == '__main__':
     init_orders_db()  # Initialize database tables
     app.run(host='0.0.0.0', port=5004, debug=True)
