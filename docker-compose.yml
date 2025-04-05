@@ -1,35 +1,71 @@
-volumes:
-  userapp:
-  productapp:
-  orderapp:
+version: '3.8'
 
 services:
-  user-service:
-    container_name: user-service-c
-    build:
-      context: ./user-service
-      dockerfile: Dockerfile
-    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application:user-service-latest 
-    ports:
-      - "5001:5001"
-    restart: always
-
   product-service:
-    container_name: product-service-c
-    build:
+    build: 
       context: ./product-service
       dockerfile: Dockerfile
-    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application:product-service-latest  
     ports:
       - "5002:5002"
-    restart: always
+    networks:
+      - ecom-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  user-service:
+    build: 
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    networks:
+      - ecom-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   order-service:
-    container_name: order-service-c
-    build:
+    build: 
       context: ./order-service
       dockerfile: Dockerfile
-    image: 339712795299.dkr.ecr.ap-south-1.amazonaws.com/nagp_ecom_application:order-service-latest  
     ports:
       - "5003:5003"
-    restart: always
+    depends_on:
+      product-service:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+    networks:
+      - ecom-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+
+  cart-service:
+    build: 
+      context: ./cart-service
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
+    depends_on:
+      product-service:
+        condition: service_healthy
+    networks:
+      - ecom-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+networks:
+  ecom-network:
+    driver: bridge
