@@ -26,10 +26,9 @@ phases:
       - echo Pushing the Docker images...
       - docker-compose push
       - echo Listing Docker images after push...
-      - DOCKER_CONTAINER_NAME= ecomcontainer
       - docker images
       - echo Writing image definitions file...
-      - printf '[{"name”:"nagp_ecom_application","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME  $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name”:"nagp_ecom_application","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
   files: imagedefinitions.json
