@@ -20,7 +20,7 @@ class DatabasePool:
                 if os.environ.get('rds_secret')=='':
                     os.environ['rds_secret'] = get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa")   
 
-                secret = os.environ.get('rds_secret',get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa"))
+                secret = os.environ.get('rds_secret')
                 print('rds_secret',secret,'YAYAYAYAYA')
                 
                 dbconfig = {
