@@ -195,7 +195,7 @@ def suggest_products():
             'message': str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@app.route('/metrics/circuit-breakers', methods=['GET'])
+@app.route('/products/metrics/circuit-breakers', methods=['GET'])
 def circuit_breaker_metrics():
     minutes = request.args.get('minutes', 5, type=int)
     events = MetricsCollector().get_recent_events(minutes)
@@ -206,7 +206,7 @@ def circuit_breaker_metrics():
         'failure_count': e.failure_count
     } for e in events])
 
-@app.route('/cache/clear', methods=['POST'])
+@app.route('/products/cache/clear', methods=['POST'])
 @require_auth
 def clear_cache():
     try:
@@ -215,7 +215,7 @@ def clear_cache():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/health', methods=['GET'])
+@app.route('/products/health', methods=['GET'])
 def health_check():
     """
     Comprehensive health check endpoint that verifies:
@@ -358,6 +358,7 @@ def health_check():
 
     return jsonify(health_status), status_code
 
+@app.route('/', methods=['GET'])
 def welcome():
     return "Welcome product-service"
 

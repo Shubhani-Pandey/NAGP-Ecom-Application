@@ -46,7 +46,7 @@ def create_cart():
     
     return CartModel.create_cart(user_id, data)
 
-@app.route('/user_cart', methods=['GET'])
+@app.route('/cart/user_cart', methods=['GET'])
 @require_auth
 @handle_exceptions
 def get_cart():
@@ -85,7 +85,7 @@ def delete_cart():
     user_id = g.user['cognito_user_id']
     return CartModel.delete_cart(user_id)
 
-@app.route('/metrics/circuit-breakers', methods=['GET'])
+@app.route('/cart/metrics/circuit-breakers', methods=['GET'])
 @handle_exceptions
 def circuit_breaker_metrics():
     try:
@@ -103,7 +103,7 @@ def circuit_breaker_metrics():
         'failure_count': e.failure_count
     } for e in events])
 
-@app.route('/health', methods=['GET'])
+@app.route('/cart/health', methods=['GET'])
 def health_check():
     try:
         # Add any necessary health checks here
@@ -120,7 +120,7 @@ def health_check():
             'service': 'cart-service'
         }), 500
 
-@app.route('/welcome', methods=['GET'])
+@app.route('/', methods=['GET'])
 def welcome():
     return "Welcome cart-service"
 

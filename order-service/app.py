@@ -31,7 +31,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     }
 )
 
-@app.route('/api/orders', methods=['POST'])
+@app.route('/orders', methods=['POST'])
 @require_auth
 def create_order():
     user_id = g.user['cognito_user_id']
@@ -133,7 +133,7 @@ def create_order():
         cursor.close()
         connection.close()
 
-@app.route('/api/orders/<int:order_id>', methods=['GET'])
+@app.route('/orders/<int:order_id>', methods=['GET'])
 @require_auth
 def get_order_by_orderid(order_id):
     
@@ -175,7 +175,7 @@ def get_order_by_orderid(order_id):
         cursor.close()
         connection.close()
 
-@app.route('/api/users/orders', methods=['GET'])
+@app.route('/users/orders', methods=['GET'])
 @require_auth
 def get_user_orders():
     user_id = g.user['cognito_user_id']
@@ -205,7 +205,7 @@ def get_user_orders():
         cursor.close()
         connection.close()
 
-@app.route('/api/orders/<int:order_id>/status', methods=['PUT'])
+@app.route('/orders/<int:order_id>/status', methods=['PUT'])
 @require_auth
 def update_order_status(order_id):
     connection = DatabasePool.get_connection('order-service')
@@ -239,7 +239,7 @@ def update_order_status(order_id):
         cursor.close()
         connection.close()
 
-@app.route('/api/orders/<int:order_id>/cancel', methods=['PUT'])
+@app.route('/orders/<int:order_id>/cancel', methods=['PUT'])
 @require_auth
 def cancel_order(order_id):
     connection = DatabasePool.get_connection('order-service')
@@ -270,7 +270,7 @@ def cancel_order(order_id):
         connection.close()
 
 
-@app.route('/health', methods=['GET'])
+@app.route('/orders/health', methods=['GET'])
 def health_check():
     """
     Comprehensive health check endpoint that verifies:
