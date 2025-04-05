@@ -8,7 +8,6 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from utils.rate_limit import setup_limiter
 from utils.db_utils import  DatabasePool, DatabaseError
 from utils.circuit_breaker import CircuitBreakerRegistry
-from utils.secrets_utils import load_secrets
 from utils.metrics import MetricsCollector
 from flask_cors import CORS
 from botocore.exceptions import ClientError

@@ -3,6 +3,7 @@ import boto3
 from utils.secrets_utils import get_secret
 import requests
 import json
+import os
 from jwt.algorithms import RSAAlgorithm
 from utils.circuit_breaker import circuit_breaker
 
@@ -23,7 +24,9 @@ class CognitoClient:
 
     def _initialize(self):
         try:
-            self._cognito_config = get_secret('dev/cognito/config')
+            print(os.environ.get('cognito_secret'))
+            self._cognito_config = os.environ.get('cognito_secret',get_secret('dev/cognito/config'))
+            print(self._cognito_config,'YYAYAYYAYAYAAYAYYAYA')
             self.client = boto3.client('cognito-idp')
         except Exception as e:
             raise CognitoError(f"Cognito initialization error: {str(e)}")

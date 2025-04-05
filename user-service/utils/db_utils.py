@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import pooling
 from utils.secrets_utils import get_secret
 from utils.circuit_breaker import circuit_breaker
+import os
 
 class DatabaseError(Exception):
     """Custom exception for database operations"""
@@ -15,7 +16,9 @@ class DatabasePool:
     def get_pool(cls, service_name):
         if cls._pool is None:
             try:
-                secret = get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa")
+                print('rds_secret', os.environ.get('rds_secret'))
+                secret = os.environ.get('rds_secret',get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa"))
+                print('rds_secret',secret,'YAYAYAYAYA')
                 
                 dbconfig = {
                     "pool_name": f"{service_name}-pool",
