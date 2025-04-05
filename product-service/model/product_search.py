@@ -9,7 +9,8 @@ class SearchAPI:
     def __init__(self):
         self.product_search = ProductSearch()
 
-    def validate_search_params(self, params: Dict[str, Any]) -> tuple[Dict[str, Any], str]:
+    # params: Dict[str, Any]) -> tuple[Dict[str, Any], str]:
+    def validate_search_params(self, params):
         """Validate and clean search parameters"""
         try:
             clean_params = {}
