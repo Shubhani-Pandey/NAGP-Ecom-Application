@@ -32,19 +32,19 @@ phases:
       - |
         printf '[
           {
-            "name": "user-service",
+            "name": "usercontainer",
             "imageUri": "%s"
           },
           {
-            "name": "product-service",
+            "name": "productcontainer",
             "imageUri": "%s"
           },
           {
-            "name": "order-service",
+            "name": "ordercontainer",
             "imageUri": "%s"
           },
           {
-            "name": "cart-service",
+            "name": "cartcontainer",
             "imageUri": "%s"
           }
         ]' \
