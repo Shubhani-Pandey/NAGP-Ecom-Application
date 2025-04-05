@@ -1,8 +1,7 @@
-FROM python:3.9-slim
-COPY requirements.txt /orderapp/requirements.txt
-WORKDIR /orderapp
+FROM python:3.8
+COPY requirements.txt /cartapp/requirements.txt
+WORKDIR /cartapp
 RUN pip install -r requirements.txt
-COPY . /orderapp
-EXPOSE 5003
+COPY . /cartapp
 ENTRYPOINT ["python"]
 CMD ["python","app.py"]
