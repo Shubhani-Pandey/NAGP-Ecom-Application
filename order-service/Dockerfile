@@ -4,4 +4,4 @@ WORKDIR /orderapp
 RUN pip install -r requirements.txt
 COPY . /orderapp
 ENTRYPOINT ["python"]
-CMD ["python","app.py"]
+CMD ["app.py"]

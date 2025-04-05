@@ -4,4 +4,4 @@ WORKDIR /cartapp
 RUN pip install -r requirements.txt
 COPY . /cartapp
 ENTRYPOINT ["python"]
-CMD ["python","app.py"]
+CMD ["app.py"]

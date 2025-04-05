@@ -4,4 +4,4 @@ WORKDIR /productapp
 RUN pip install -r requirements.txt
 COPY . /productapp
 ENTRYPOINT ["python"]
-CMD ["python", "app.py"]
+CMD ["app.py"]
