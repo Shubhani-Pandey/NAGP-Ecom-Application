@@ -5,6 +5,7 @@ from opensearchpy import OpenSearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 from util.secrets_utils import get_secret
 import boto3
+import json
 import os
 
 class ProductModel:
@@ -13,7 +14,11 @@ class ProductModel:
     def  get_opensearch_client():
         # Get OpenSearch configuration from Secrets Manager
         try:
-            secrets = get_secret('opensearch/config')
+            if os.environ.get('opensearch_secret')=='':
+                os.environ['opensearch_secret'] = get_secret('opensearch/config') 
+
+            secrets = json.loads(os.environ.get('opensearch_secret'))
+
             host = secrets.get('host')
             region = secrets.get('region')
             master_user_name = secrets.get('master_user_name')

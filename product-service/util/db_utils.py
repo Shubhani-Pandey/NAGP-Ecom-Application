@@ -1,5 +1,6 @@
 import boto3
 import json
+import os
 from botocore.exceptions import ClientError
 from util.secrets_utils import get_secret
 from util.circuit_breaker import circuit_breaker
@@ -13,7 +14,10 @@ class DynamoDB:
     @classmethod
     @circuit_breaker('dynamodb-products-connection', failure_threshold=5, reset_timeout=60,fallback_function=lambda: None)
     def get_connection(self):
-        secret = get_secret(f"dev/dynamodb/config")
+        if os.environ.get('dynamo_db_secret')=='':
+            os.environ['dynamo_db_secret'] = get_secret(f"dev/dynamodb/config") 
+
+        secret = json.loads(os.environ.get('dynamo_db_secret'))
 
         return boto3.resource('dynamodb',
             region_name=secret['region'],
