@@ -24,13 +24,11 @@ class CognitoClient:
 
     def _initialize(self):
         try:
-            print(os.environ.get('cognito_secret'))
-            
+
             if os.environ.get('cognito_secret')=='':
                 os.environ['cognito_secret'] = get_secret('dev/cognito/config')     
                 
-            self._cognito_config = os.environ.get('cognito_secret')
-            print(self._cognito_config,'YYAYAYYAYAYAAYAYYAYA')
+            self._cognito_config = json.loads(os.environ.get('cognito_secret'))
             self.client = boto3.client('cognito-idp')
         except Exception as e:
             raise CognitoError(f"Cognito initialization error: {str(e)}")

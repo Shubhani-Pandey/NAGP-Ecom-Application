@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import pooling
 from utils.secrets_utils import get_secret
 from utils.circuit_breaker import circuit_breaker
+import json
 import os
 
 class DatabaseError(Exception):
@@ -16,12 +17,10 @@ class DatabasePool:
     def get_pool(cls, service_name):
         if cls._pool is None:
             try:
-                print('rds_secret', os.environ.get('rds_secret'))
                 if os.environ.get('rds_secret')=='':
                     os.environ['rds_secret'] = get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa")   
 
-                secret = os.environ.get('rds_secret')
-                print('rds_secret',secret,'YAYAYAYAYA')
+                secret = json.loads(os.environ.get('rds_secret'))
                 
                 dbconfig = {
                     "pool_name": f"{service_name}-pool",
