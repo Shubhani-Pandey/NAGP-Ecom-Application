@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, g
+import requests
 from util.db_utils import  init_orders_db, get_db_connection
 from util.auth_utils import require_auth
 from service.cart_service import get_cart_items, delete_cart, calculate_order_total
@@ -323,28 +324,28 @@ def health_check():
         }
 
     # Check Dependencies
-    # dependencies = {
-    #     'cart-service': 'http://cart-service:5004/health',
-    #     'product-service': 'http://product-service:5002/health'
-    # }
+    dependencies = {
+        'cart-service': 'http://cart-service-ecs-connect:5003/health',
+        'product-service': 'http://product-service-ecs-connect:5002/health'
+    }
 
-    # health_status['checks']['dependencies'] = {}
+    health_status['checks']['dependencies'] = {}
     
-    # for service, url in dependencies.items():
-    #     try:
-    #         response = requests.get(url, timeout=2)
-    #         health_status['checks']['dependencies'][service] = {
-    #             'status': 'healthy' if response.status_code == 200 else 'unhealthy',
-    #             'statusCode': response.status_code
-    #         }
-    #         if response.status_code != 200:
-    #             health_status['status'] = 'warning'
-    #     except RequestException as e:
-    #         health_status['checks']['dependencies'][service] = {
-    #             'status': 'unhealthy',
-    #             'message': str(e)
-    #         }
-    #         health_status['status'] = 'warning'
+    for service, url in dependencies.items():
+        try:
+            response = requests.get(url, timeout=2)
+            health_status['checks']['dependencies'][service] = {
+                'status': 'healthy' if response.status_code == 200 else 'unhealthy',
+                'statusCode': response.status_code
+            }
+            if response.status_code != 200:
+                health_status['status'] = 'warning'
+        except requests.RequestException as e:
+            health_status['checks']['dependencies'][service] = {
+                'status': 'unhealthy',
+                'message': str(e)
+            }
+            health_status['status'] = 'warning'
 
     # Check System Resources
     try:

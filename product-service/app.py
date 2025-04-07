@@ -341,29 +341,29 @@ def health_check():
         }
         health_status['status'] = 'warning'
 
-    # # Add Dependencies Check
-    # dependencies = {
-    #     'user-service': 'http://user-service:5001/health',
-    #     'order-service': 'http://order-service:5003/health'
-    # }
+    # Add Dependencies Check
+    dependencies = {
+        'user-service': 'http://user-service-ecs-connect:5001/users/health',
+        'order-service': 'http://order-service-ecs-connect:5003/orders/health'
+    }
 
-    # health_status['checks']['dependencies'] = {}
-    # import requests
-    # from requests.exceptions import RequestException
+    health_status['checks']['dependencies'] = {}
+    import requests
+    from requests.exceptions import RequestException
 
-    # for service, url in dependencies.items():
-    #     try:
-    #         response = requests.get(url, timeout=2)
-    #         health_status['checks']['dependencies'][service] = {
-    #             'status': 'healthy' if response.status_code == 200 else 'unhealthy',
-    #             'statusCode': response.status_code
-    #         }
-    #     except RequestException as e:
-    #         health_status['checks']['dependencies'][service] = {
-    #             'status': 'unhealthy',
-    #             'message': str(e)
-    #         }
-    #         health_status['status'] = 'warning'
+    for service, url in dependencies.items():
+        try:
+            response = requests.get(url, timeout=2)
+            health_status['checks']['dependencies'][service] = {
+                'status': 'healthy' if response.status_code == 200 else 'unhealthy',
+                'statusCode': response.status_code
+            }
+        except RequestException as e:
+            health_status['checks']['dependencies'][service] = {
+                'status': 'unhealthy',
+                'message': str(e)
+            }
+            health_status['status'] = 'warning'
 
     # Set response status code based on health status
     status_code = 200 if health_status['status'] == 'healthy' else 503

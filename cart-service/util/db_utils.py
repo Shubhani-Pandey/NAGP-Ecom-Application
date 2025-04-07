@@ -29,7 +29,7 @@ class DynamoDBConn:
     
 def get_product_details(product_id):
     # Assuming product service URL is stored in environment variable
-    product_service_url = f"http://127.0.0.1:5002/products/{product_id}"
+    product_service_url = f"http://product-service-ecs-connect:5002/products/{product_id}"
     response = requests.get(product_service_url)
     print(response.json())
     if response.status_code == 200:

@@ -1,7 +1,7 @@
 import requests
 import os
 
-CART_SERVICE_URL = 'http://127.0.0.1:5003'
+CART_SERVICE_URL = 'http://cart-service-ecs-connect:5003'
 
 def get_cart_items(auth_header):
     """Fetch cart items from cart service"""
