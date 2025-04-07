@@ -1,6 +1,6 @@
 # models/user.py
 from uuid import UUID
-from utils.db_utils import DatabaseConnection, DatabaseError
+from utils.db_utils import get_db_connection, DatabaseError
 
 
 class UserModel:
@@ -10,7 +10,7 @@ class UserModel:
         conn = None
         cursor = None
         try:
-            with DatabaseConnection().get_connection() as conn:
+            with get_db_connection() as conn:
                 cursor = conn.cursor(dictionary=True)
                 
                 query = """
@@ -29,7 +29,7 @@ class UserModel:
         conn = None
         cursor = None
         try:
-            with DatabaseConnection().get_connection() as conn:
+            with get_db_connection() as conn:
                 cursor = conn.cursor(dictionary=True)
                
                 query = "SELECT * FROM users WHERE cognito_user_id = %s"
@@ -44,7 +44,7 @@ class UserModel:
         conn = None
         cursor = None
         try:
-            with DatabaseConnection().get_connection() as conn:
+            with get_db_connection() as conn:
                 cursor = conn.cursor(dictionary=True)
             
                 update_fields = []

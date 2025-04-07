@@ -6,7 +6,7 @@ from utils.db_utils import init_user_db
 from models.user import UserModel
 from flask_swagger_ui import get_swaggerui_blueprint
 from utils.rate_limit import setup_limiter
-from utils.db_utils import  DatabaseError, DatabaseConnection
+from utils.db_utils import get_db_connection
 from utils.circuit_breaker import CircuitBreakerRegistry
 from utils.metrics import MetricsCollector
 from flask_cors import CORS
@@ -218,7 +218,7 @@ def health_check():
     cognito_healthy = False
     
     try:
-        with DatabaseConnection().get_connection() as conn:
+        with get_db_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT 1")
             cursor.fetchone()
