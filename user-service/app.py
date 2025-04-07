@@ -219,10 +219,19 @@ def health_check():
     
     try:
         conn = DatabasePool.get_connection('user-service')
-        conn.ping()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
         db_healthy = True
+        cursor.close()
+        conn.close()
+        
     except:
         logger.error(f"Database health: {db_healthy}")
+    finally:
+        if conn:
+            conn.close()
 
     try:
         cognito = CognitoClient()
