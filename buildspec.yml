@@ -34,6 +34,18 @@ phases:
           {
             "name": "usercontainer",
             "imageUri": "%s"
+          },
+          {
+            "name": "productcontainer",
+            "imageUri": "%s"
+          },
+          {
+            "name": "ordercontainer",
+            "imageUri": "%s"
+          },
+          {
+            "name": "cartcontainer",
+            "imageUri": "%s"
           }
         ]' \
         "$REPOSITORY_URI:user-service_latest" \

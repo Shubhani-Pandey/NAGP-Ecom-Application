@@ -223,8 +223,6 @@ def health_check():
             cursor.execute("SELECT 1")
             cursor.fetchone()
             db_healthy = True
-        # cursor.close()
-        # conn.close()
          
     except:
         logger.error(f"Database health: {db_healthy}")
