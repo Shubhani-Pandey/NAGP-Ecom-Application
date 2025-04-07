@@ -208,7 +208,7 @@ def update_user():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-@app.route('users/health', methods=['GET'])
+@app.route('/users/health', methods=['GET'])
 def health_check():
     # Get all circuit breaker states
     circuit_states = CircuitBreakerRegistry().get_all_states()
@@ -245,7 +245,7 @@ def health_check():
     }), status
 
 
-@app.route('users/metrics/circuit-breakers', methods=['GET'])
+@app.route('/users/metrics/circuit-breakers', methods=['GET'])
 def circuit_breaker_metrics():
     minutes = request.args.get('minutes', 5, type=int)
     events = MetricsCollector().get_recent_events(minutes)
