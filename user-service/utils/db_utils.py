@@ -16,7 +16,7 @@ class DatabaseError(Exception):
 
 class DatabaseConnection:
     def __init__(self):
-        self.db_pool = DatabasePool()
+        self.db_pool = DatabasePool()._pool
 
     def get_connection(self):
         return self.db_pool
@@ -26,11 +26,11 @@ class DatabasePool:
     _instance = None
     _pool = None
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(DatabasePool, cls).__new__(cls)
-            cls._instance._initialize_pool()
-        return cls._instance
+    def __init__(self):
+        if self._instance is None:
+            self._instance = super(DatabasePool, self).__new__(self)
+            self._instance._initialize_pool()
+        return self._instance
 
     def _initialize_pool(self):
         try:
@@ -65,37 +65,6 @@ class DatabasePool:
             else:
                 print(f"Error: {err}")
             raise
-
-    @contextmanager
-    def get_connection(self):
-        """Context manager for database connections"""
-        conn = None
-        try:
-            conn = self._pool.get_connection()
-            yield conn
-        except Exception as e:
-            logger.error(f"Database connection error: {e}")
-            raise
-        finally:
-            if conn:
-                conn.close()
-
-    @contextmanager
-    def get_cursor(self):
-        """Context manager for database cursors"""
-        with self.get_connection() as conn:
-            cursor = None
-            try:
-                cursor = conn.cursor(dictionary=True)
-                yield cursor
-                conn.commit()
-            except Exception as e:
-                conn.rollback()
-                logger.error(f"Database cursor error: {e}")
-                raise
-            finally:
-                if cursor:
-                    cursor.close()
 
 
 def init_user_db():
