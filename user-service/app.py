@@ -37,7 +37,7 @@ CORS(app)
 # Initialize rate limiter
 limiter = setup_limiter(app)
 
-@app.route('/auth/register', methods=['POST'])
+@app.route('/users/register', methods=['POST'])
 def register_user():
     print("Content-Type:", request.headers.get('Content-Type'))
     print("Raw Data:", request.get_data(as_text=True))
@@ -74,7 +74,7 @@ def register_user():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/auth/confirm', methods=['POST'])
+@app.route('/users/confirm', methods=['POST'])
 def confirm_registration():
     try:
         data = request.get_json()
@@ -83,7 +83,7 @@ def confirm_registration():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-@app.route('/auth/login', methods=['POST'])
+@app.route('/users/login', methods=['POST'])
 # @limiter.limit("50 per minute")
 def login():
     try:
@@ -100,7 +100,7 @@ def login():
     except Exception as e:
         return jsonify({'error': str(e)}), 401
 
-@app.route('/auth/resend-code', methods=['POST'])
+@app.route('/users/resend-code', methods=['POST'])
 def resend_confirmation_code():
     try:
         data = request.get_json()
@@ -123,7 +123,7 @@ def resend_confirmation_code():
             "error": f"Cognito error: {str(e)}"
         }), 400
     
-@app.route('/auth/logout', methods=['POST'])
+@app.route('/users/logout', methods=['POST'])
 @require_auth
 def logout():
     try:
