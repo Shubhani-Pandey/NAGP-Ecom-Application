@@ -6,7 +6,7 @@ from utils.db_utils import init_user_db
 from models.user import UserModel
 from flask_swagger_ui import get_swaggerui_blueprint
 from utils.rate_limit import setup_limiter
-from utils.db_utils import  DatabasePool, DatabaseError
+from utils.db_utils import  DatabaseError, DatabaseConnection
 from utils.circuit_breaker import CircuitBreakerRegistry
 from utils.metrics import MetricsCollector
 from flask_cors import CORS
@@ -218,14 +218,13 @@ def health_check():
     cognito_healthy = False
     
     try:
-        conn = DatabasePool.get_connection('user-service')
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT 1")
-        cursor.fetchone()
-        db_healthy = True
-        cursor.close()
-        conn.close()
+        with DatabaseConnection().get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+            db_healthy = True
+        # cursor.close()
+        # conn.close()
          
     except:
         logger.error(f"Database health: {db_healthy}")
