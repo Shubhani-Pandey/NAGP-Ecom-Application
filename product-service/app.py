@@ -238,7 +238,6 @@ def health_check():
             os.environ['dynamo_db_secret'] = get_secret(f"dev/dynamodb/config") 
 
         secret = json.loads(os.environ.get('dynamo_db_secret'))
-        print(secret)
 
         dynamodb = boto3.client('dynamodb',
                                   region_name=secret['region'],
@@ -260,7 +259,10 @@ def health_check():
 
     # Check OpenSearch
     try:
-        secrets = get_secret('opensearch/config')
+        if os.environ.get('opensearch_secret')=='':
+                os.environ['opensearch_secret'] = get_secret('opensearch/config') 
+
+        secrets = json.loads(os.environ.get('opensearch_secret'))
         host = secrets.get('host')
         region = secrets.get('region')
         master_user_name = secrets.get('master_user_name')
