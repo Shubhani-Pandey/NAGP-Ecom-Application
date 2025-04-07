@@ -34,24 +34,40 @@ phases:
           {
             "name": "usercontainer",
             "imageUri": "%s"
-          },
-          {
-            "name": "productcontainer",
-            "imageUri": "%s"
-          },
-          {
-            "name": "ordercontainer",
-            "imageUri": "%s"
-          },
+          }
+        ]' \
+        "$REPOSITORY_URI:user-service_latest" > user_image_definitions.json
+      - cat user_image_definitions.json
+      - |
+        printf '[
           {
             "name": "cartcontainer",
             "imageUri": "%s"
           }
         ]' \
-        "$REPOSITORY_URI:user-service_latest" \
-        "$REPOSITORY_URI:product-service_latest" \
-        "$REPOSITORY_URI:order-service_latest" \
-        "$REPOSITORY_URI:cart-service_latest" > imagedefinitions.json
-      - cat imagedefinitions.json
+        "$REPOSITORY_URI:cart-service_latest" > cart_image_definitions.json
+      - cat cart_image_definitions.json
+      - |
+        printf '[
+          {
+            "name": "ordercontainer",
+            "imageUri": "%s"
+          }
+        ]' \
+        "$REPOSITORY_URI:order-service_latest" > order_image_definitions.json
+      - cat order_image_definitions.json
+      - |
+        printf '[
+          {
+            "name": "productcontainer",
+            "imageUri": "%s"
+          }
+        ]' \
+        "$REPOSITORY_URI:product-service_latest" > product_image_definitions.json
+      - cat product_image_definitions.json
 artifacts:
-  files: imagedefinitions.json
+  files: 
+    - user_image_definitions.json
+    - order_image_definitions.json
+    - product_image_definitions.json
+    - cart_image_definitions.json
