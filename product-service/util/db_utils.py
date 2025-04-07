@@ -19,11 +19,7 @@ class DynamoDB:
 
         secret = json.loads(os.environ.get('dynamo_db_secret'))
 
-        return boto3.resource('dynamodb',
-            region_name=secret['region'],
-            aws_access_key_id=secret['AWS_ACCESS_KEY_ID'],
-            aws_secret_access_key=secret['AWS_SECRET_ACCESS_KEY']
-        )
+        return boto3.resource('dynamodb',region_name=secret['region'])
     
 
 def table_exists(con, table_name):
