@@ -19,6 +19,7 @@ class DynamoDBConn:
             os.environ['dynamo_db_secret'] = get_secret(f"dev/dynamodb/config")  
 
         secret = json.loads(os.environ.get('dynamo_db_secret'))
+        print(secret)
 
         return boto3.resource('dynamodb',
             region_name=secret['region'],
