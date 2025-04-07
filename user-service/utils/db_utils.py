@@ -74,7 +74,6 @@ class DatabasePool:
                 else:
                     print(f"Error: {err}")
                 raise
-        return self._pool
     
     # @classmethod
     # @circuit_breaker('database-connection', failure_threshold=5, reset_timeout=60,fallback_function=lambda: None)
@@ -112,8 +111,3 @@ def init_user_db():
             conn.commit()
     except Exception as e:
         raise DatabaseError(f"Database initialization error: {str(e)}")
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
