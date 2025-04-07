@@ -5,83 +5,98 @@ from mysql.connector import pooling
 from utils.secrets_utils import get_secret
 from utils.circuit_breaker import circuit_breaker
 import json
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 class DatabaseError(Exception):
     """Custom exception for database operations"""
     pass
 
-from contextlib import contextmanager
-
 class DatabaseConnection:
     def __init__(self):
-        self.pool = DatabasePool()
+        self.db_pool = DatabasePool()
+
+    def get_connection(self):
+        return self.db_pool
+    
+
+class DatabasePool:
+    _instance = None
+    _pool = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(DatabasePool, cls).__new__(cls)
+            cls._instance._initialize_pool()
+        return cls._instance
+
+    def _initialize_pool(self):
+        try:
+
+            if os.environ.get('rds_secret')=='':
+                    os.environ['rds_secret'] = get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa")   
+
+            secret = json.loads(os.environ.get('rds_secret'))
+
+            print('got db configs, attempting db connection')
+            
+            dbconfig = {
+                "pool_name": "user-service-pool",
+                "pool_size": 5,
+                "host": 'ecom-database.cfwys6mggqd4.eu-north-1.rds.amazonaws.com',
+                "user": secret['username'],
+                "password": secret['password'],
+                "database": 'ecommerce',
+                "port": 3306
+            }
+                
+            
+            self._pool = mysql.connector.pooling.MySQLConnectionPool(**dbconfig)
+            logger.info("Database pool initialized successfully")
+        except mysql.connector.Error as err:
+            if err.errno == 2003:
+                print("Cannot connect to MySQL server. Check if server is running")
+            elif err.errno == 1045:
+                print("Invalid username or password")
+            elif err.errno == 1049:
+                print("Database does not exist")
+            else:
+                print(f"Error: {err}")
+            raise
 
     @contextmanager
     def get_connection(self):
+        """Context manager for database connections"""
         conn = None
         try:
-            conn = self.pool.get_connection()
+            conn = self._pool.get_connection()
             yield conn
+        except Exception as e:
+            logger.error(f"Database connection error: {e}")
+            raise
         finally:
             if conn:
-                try:
-                    conn.close()
-                except:
-                    pass
+                conn.close()
 
-    def execute_query(self, query, params=None):
+    @contextmanager
+    def get_cursor(self):
+        """Context manager for database cursors"""
         with self.get_connection() as conn:
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute(query, params)
-            return cursor.fetchall()
-
-
-class DatabasePool:
-    _pool = None
-    
-    @classmethod
-    def __init__(self):
-        if self._pool is None:
+            cursor = None
             try:
-                if os.environ.get('rds_secret')=='':
-                    os.environ['rds_secret'] = get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa")   
-
-                secret = json.loads(os.environ.get('rds_secret'))
-
-                print('got db configs, attempting db connection')
-                
-                dbconfig = {
-                    "pool_name": "user-service-pool",
-                    "pool_size": 5,
-                    "host": 'ecom-database.cfwys6mggqd4.eu-north-1.rds.amazonaws.com',
-                    "user": secret['username'],
-                    "password": secret['password'],
-                    "database": 'ecommerce',
-                    "port": 3306
-                }
-                
-                self._pool = mysql.connector.pooling.MySQLConnectionPool(**dbconfig)
-                print('db connection succssful')
-
-            except mysql.connector.Error as err:
-                if err.errno == 2003:
-                    print("Cannot connect to MySQL server. Check if server is running")
-                elif err.errno == 1045:
-                    print("Invalid username or password")
-                elif err.errno == 1049:
-                    print("Database does not exist")
-                else:
-                    print(f"Error: {err}")
+                cursor = conn.cursor(dictionary=True)
+                yield cursor
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                logger.error(f"Database cursor error: {e}")
                 raise
-    
-    # @classmethod
-    # @circuit_breaker('database-connection', failure_threshold=5, reset_timeout=60,fallback_function=lambda: None)
-    # def get_connection(cls, service_name):
-    #     conn=cls.get_pool(service_name).get_connection()
-    #     cursor = conn.cursor()
-    #     # return cls.get_pool(service_name).get_connection()
-    #     return cursor
+            finally:
+                if cursor:
+                    cursor.close()
+
 
 def init_user_db():
     conn = None
