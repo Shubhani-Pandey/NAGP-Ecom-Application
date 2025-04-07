@@ -29,7 +29,6 @@ class DatabasePool:
                     "user": secret['username'],
                     "password": secret['password'],
                     "database": 'ecommerce',
-                    "pool_size": 5,
                     "port": 3306
                 }
                 

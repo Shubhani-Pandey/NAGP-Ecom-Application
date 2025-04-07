@@ -36,36 +36,36 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 def create_order():
     user_id = g.user['cognito_user_id']
     shipping_address = g.user['address']
-    connection = DatabasePool.get_connection('order-service')
-    cursor = connection.cursor()
-
-
-    # Get authorization header
-    auth_header = request.headers.get('Authorization')
-    if not auth_header:
-        return jsonify({'error': 'Authorization header is required'}), 401
-
-    
-    # Get cart items
     try:
-        cart_response = get_cart_items(auth_header)
-        if not cart_response or 'items' not in cart_response:
-            return jsonify({'error': 'Cart is empty'}), 400
+        connection = DatabasePool.get_connection('order-service')
+        cursor = connection.cursor()
+
+
+        # Get authorization header
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return jsonify({'error': 'Authorization header is required'}), 401
+
         
-        cart_items = cart_response['items']
-        if not cart_items:
-            return jsonify({'error': 'Cart is empty'}), 400
-    except Exception as e:
-        return jsonify({'error': f'Failed to fetch cart: {str(e)}'}), 500
-    
+        # Get cart items
+        try:
+            cart_response = get_cart_items(auth_header)
+            if not cart_response or 'items' not in cart_response:
+                return jsonify({'error': 'Cart is empty'}), 400
+            
+            cart_items = cart_response['items']
+            if not cart_items:
+                return jsonify({'error': 'Cart is empty'}), 400
+        except Exception as e:
+            return jsonify({'error': f'Failed to fetch cart: {str(e)}'}), 500
+        
 
-    # Calculate total amount
-    total_amount = calculate_order_total(cart_items)
+        # Calculate total amount
+        total_amount = calculate_order_total(cart_items)
 
-    # Begin transaction
-    connection.start_transaction()
+        # Begin transaction
+        connection.start_transaction()
 
-    try:
         # Create new order
         order_query = """
             INSERT INTO orders (user_id, total_amount, shipping_address, status)
@@ -136,11 +136,12 @@ def create_order():
 @app.route('/orders/<int:order_id>', methods=['GET'])
 @require_auth
 def get_order_by_orderid(order_id):
-    
-    connection = DatabasePool.get_connection('order-service')
-    cursor = connection.cursor(buffered=True, dictionary=True)
 
-    try:
+    try:    
+        connection = DatabasePool.get_connection('order-service')
+        cursor = connection.cursor(buffered=True, dictionary=True)
+
+
         # Get order details
         order_query = """
             SELECT * FROM orders WHERE id = %s
@@ -179,10 +180,11 @@ def get_order_by_orderid(order_id):
 @require_auth
 def get_user_orders():
     user_id = g.user['cognito_user_id']
-    connection = DatabasePool.get_connection('order-service')
-    cursor = connection.cursor(buffered=True, dictionary=True)
-
     try:
+        connection = DatabasePool.get_connection('order-service')
+        cursor = connection.cursor(buffered=True, dictionary=True)
+
+
         query = """
             SELECT id, total_amount, status, created_at 
             FROM orders 
@@ -208,10 +210,11 @@ def get_user_orders():
 @app.route('/orders/<int:order_id>/status', methods=['PUT'])
 @require_auth
 def update_order_status(order_id):
-    connection = DatabasePool.get_connection('order-service')
-    cursor = connection.cursor()
-
     try:
+        connection = DatabasePool.get_connection('order-service')
+        cursor = connection.cursor()
+
+
         data = request.get_json()
         if 'status' not in data:
             return jsonify({'error': 'Status is required'}), 400
@@ -242,10 +245,11 @@ def update_order_status(order_id):
 @app.route('/orders/<int:order_id>/cancel', methods=['PUT'])
 @require_auth
 def cancel_order(order_id):
-    connection = DatabasePool.get_connection('order-service')
-    cursor = connection.cursor(buffered=True, dictionary=True)
-
     try:
+        connection = DatabasePool.get_connection('order-service')
+        cursor = connection.cursor(buffered=True, dictionary=True)
+
+
         # Check current status
         cursor.execute("SELECT status FROM orders WHERE id = %s", (order_id,))
         order = cursor.fetchone()

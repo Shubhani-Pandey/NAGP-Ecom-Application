@@ -229,9 +229,6 @@ def health_check():
         
     except:
         logger.error(f"Database health: {db_healthy}")
-    finally:
-        if conn:
-            conn.close()
 
     try:
         cognito = CognitoClient()
