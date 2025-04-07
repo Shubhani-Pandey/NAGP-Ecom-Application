@@ -234,7 +234,17 @@ def health_check():
 
     # Check DynamoDB
     try:
-        dynamodb = boto3.client('dynamodb')
+        if os.environ.get('dynamo_db_secret')=='':
+            os.environ['dynamo_db_secret'] = get_secret(f"dev/dynamodb/config") 
+
+        secret = json.loads(os.environ.get('dynamo_db_secret'))
+        print(secret)
+
+        dynamodb = boto3.client('dynamodb',
+                                  region_name=secret['region'],
+                                  aws_access_key_id=secret['AWS_ACCESS_KEY_ID'],
+                                  aws_secret_access_key=secret['AWS_SECRET_ACCESS_KEY'])
+        
         dynamodb.describe_table(TableName='Products')
         health_status['checks']['dynamodb'] = {
             'status': 'healthy',
