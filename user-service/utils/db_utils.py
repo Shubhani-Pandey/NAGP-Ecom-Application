@@ -21,6 +21,8 @@ class DatabasePool:
                     os.environ['rds_secret'] = get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa")   
 
                 secret = json.loads(os.environ.get('rds_secret'))
+
+                print('got db configs, attempting db connection')
                 
                 dbconfig = {
                     "pool_name": f"{service_name}-pool",
@@ -33,6 +35,7 @@ class DatabasePool:
                 }
                 
                 cls._pool = mysql.connector.pooling.MySQLConnectionPool(**dbconfig)
+                print('db connection succssful')
 
             except mysql.connector.Error as err:
                 if err.errno == 2003:

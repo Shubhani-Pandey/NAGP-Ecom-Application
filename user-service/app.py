@@ -226,7 +226,7 @@ def health_check():
         db_healthy = True
         cursor.close()
         conn.close()
-        
+         
     except:
         logger.error(f"Database health: {db_healthy}")
 
@@ -263,5 +263,6 @@ def circuit_breaker_metrics():
     } for e in events])
 
 if __name__ == '__main__':
+    print('initializing user db')
     init_user_db()
     app.run(host='0.0.0.0', port=5001, debug=True)
