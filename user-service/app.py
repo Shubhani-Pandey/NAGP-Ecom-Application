@@ -248,7 +248,7 @@ def health_check():
     }), status
 
 
-@app.route('/users/metrics/circuit-breakers', methods=['GET'])
+@app.route('/users/metrics-circuit-breakers', methods=['GET'])
 def circuit_breaker_metrics():
     minutes = request.args.get('minutes', 5, type=int)
     events = MetricsCollector().get_recent_events(minutes)

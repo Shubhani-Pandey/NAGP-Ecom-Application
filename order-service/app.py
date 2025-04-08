@@ -169,7 +169,7 @@ def get_order_by_orderid(order_id):
         cursor.close()
         conn.close()
 
-@app.route('/users/orders', methods=['GET'])
+@app.route('/orders/user-order', methods=['GET'])
 @require_auth
 def get_user_orders():
     user_id = g.user['cognito_user_id']
