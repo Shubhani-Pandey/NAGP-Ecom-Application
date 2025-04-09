@@ -3,8 +3,10 @@ from decimal import Decimal
 from util.db_utils import DynamoDBConn, get_product_details
 from flask import Flask, request, jsonify
 from .cart_data import Cart
-import uuid
-import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class CartModel:
 
@@ -14,6 +16,8 @@ class CartModel:
             product_id = cart_data.get('product_id')
             quantity = cart_data.get('quantity', 1)
             current_time = datetime.now(timezone.utc).isoformat()
+
+            logger.log(product_id, quantity, current_time)
             
             # Get product details from product service
             product = get_product_details(product_id)

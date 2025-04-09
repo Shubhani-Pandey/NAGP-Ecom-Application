@@ -36,10 +36,12 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 @handle_exceptions
 def create_cart():
     data = request.get_json()
+    logger.log('input data', data)
     if not data:
         return jsonify({'error': 'No data provided'}), 400
         
     CartModel.validate_cart_data(data)
+    logger.log('data validated')
     user_id = g.user['cognito_id']
     return CartModel.create_cart(user_id, data)
 
