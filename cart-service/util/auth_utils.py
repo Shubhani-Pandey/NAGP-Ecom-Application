@@ -17,11 +17,11 @@ def get_auth_token():
 def validate_token_with_user_service(token):
     """Validates token with user service and returns user details"""
     try:
-        logger.info('making request to user service with token as :', token)
-        logger.info('making request to:',f"{user_service_url}/users/me")
+        # logger.info('making request to user service with token as :', token)
+        # logger.info('making request to:',f"{user_service_url}/users/me")
         headers = {'Authorization': f'Bearer {token}'}
         response = requests.get(f"{user_service_url}/users/me",headers=headers)
-        logger.info(response)
+        # logger.info(response)
         
         if response.status_code == 200:
             return response.json()
@@ -39,13 +39,13 @@ def require_auth(f):
             return jsonify({'error': 'No authorization token provided'}), 401
             
         user_data = validate_token_with_user_service(token)
-        logger.info('validated user data',user_data)
+        # logger.info('validated user data',user_data)
         
         if not user_data:
             return jsonify({'error': 'Invalid or expired token'}), 401
             
         # Add user data to flask.g for use in the route
         g.user = user_data
-        logger.info('flask.g user data',g.user)
+        # logger.info('flask.g user data',g.user)
         return f(*args, **kwargs)
     return decorated_function

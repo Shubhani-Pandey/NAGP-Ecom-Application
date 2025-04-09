@@ -41,9 +41,6 @@ def create_cart():
         
     CartModel.validate_cart_data(data)
     user_id = g.user['cognito_id']
-
-    print(user_id, data)
-    
     return CartModel.create_cart(user_id, data)
 
 @app.route('/cart/user_cart', methods=['GET'])

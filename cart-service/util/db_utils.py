@@ -5,6 +5,10 @@ from botocore.exceptions import ClientError
 from util.secrets_utils import get_secret
 from util.circuit_breaker import circuit_breaker
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class DynamoDBError(Exception):
     """Custom exception for Secrets Manager errors"""
@@ -29,8 +33,11 @@ class DynamoDBConn:
     
 def get_product_details(product_id):
     # Assuming product service URL is stored in environment variable
+    logger.log('calling',f"http://product-service-ecs-connect:5002/products/{product_id}")
     product_service_url = f"http://product-service-ecs-connect:5002/products/{product_id}"
     response = requests.get(product_service_url)
+    logger.log('product response', response)
+    
     print(response.json())
     if response.status_code == 200:
         return response.json()
