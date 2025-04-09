@@ -51,6 +51,9 @@ def create_cart():
 @handle_exceptions
 def get_cart():
     print('inside get cart api')
+    print(g.user)
+    logger.info(g.user)
+    logger.info(g.user['cognito_user_id'])
     user_id = g.user['cognito_user_id']
     return CartModel.get_cart_by_user_id(user_id)
 
