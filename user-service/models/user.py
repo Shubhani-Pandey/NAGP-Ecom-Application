@@ -23,6 +23,9 @@ class UserModel:
             return cursor.lastrowid
         except Exception as e:
             raise DatabaseError(f"Error creating user: {str(e)}")
+        finally:
+            cursor.close()
+            conn.close()
 
     @staticmethod
     def get_user_by_cognito_id(cognito_user_id):
@@ -38,6 +41,9 @@ class UserModel:
             return result
         except Exception as e:
             raise DatabaseError(f"Error fetching user: {str(e)}")
+        finally:
+            cursor.close()
+            conn.close()
 
     @staticmethod
     def update_user(cognito_user_id, update_data):
@@ -66,3 +72,6 @@ class UserModel:
                 return False
         except Exception as e:
             raise DatabaseError(f"Error updating user: {str(e)}")
+        finally:
+            cursor.close()
+            conn.close()

@@ -303,6 +303,9 @@ def health_check():
             'error_code': str(e.errno) if hasattr(e, 'errno') else 'unknown'
         }
         health_status['status'] = 'unhealthy'
+    finally:
+        cursor.close()
+        conn.close()
 
     # Check Memory Usage
     try:
