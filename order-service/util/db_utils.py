@@ -53,7 +53,7 @@ class DatabasePool:
                 
                 dbconfig = {
                     "pool_name": "order-service-pool",
-                    "pool_size": 10,  # Reduced pool size
+                    "pool_size": 20,  # Reduced pool size
                     "host": 'ecom-database.cfwys6mggqd4.eu-north-1.rds.amazonaws.com',
                     "user": secret['username'],
                     "password": secret['password'],
