@@ -53,7 +53,7 @@ class DatabasePool:
                 
                 dbconfig = {
                     "pool_name": "order-service-pool",
-                    "pool_size": 3,  # Reduced pool size
+                    "pool_size": 2,  # Reduced pool size
                     "host": 'ecom-database.cfwys6mggqd4.eu-north-1.rds.amazonaws.com',
                     "user": secret['username'],
                     "password": secret['password'],
@@ -61,8 +61,7 @@ class DatabasePool:
                     "port": 3306,
                     "pool_reset_session": True,
                     "autocommit": True,
-                    "connect_timeout": 10,
-                    "idle": 10000
+                    "connect_timeout": 10
                 }
                 
                 self._pool = mysql.connector.pooling.MySQLConnectionPool(**dbconfig)
