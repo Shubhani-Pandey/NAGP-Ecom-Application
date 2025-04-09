@@ -40,7 +40,7 @@ def create_cart():
         return jsonify({'error': 'No data provided'}), 400
         
     CartModel.validate_cart_data(data)
-    user_id = g.user['cognito_user_id']
+    user_id = g.user['cognito_id']
 
     print(user_id, data)
     
@@ -53,8 +53,8 @@ def get_cart():
     print('inside get cart api')
     print(g.user)
     logger.info(g.user)
-    logger.info(g.user['cognito_user_id'])
-    user_id = g.user['cognito_user_id']
+    logger.info(g.user['cognito_id'])
+    user_id = g.user['cognito_id']
     return CartModel.get_cart_by_user_id(user_id)
 
 @app.route('/cart', methods=['PUT'])
@@ -66,7 +66,7 @@ def update_cart():
         return jsonify({'error': 'No data provided'}), 400
         
     CartModel.validate_cart_data(data)
-    user_id = g.user['cognito_user_id']
+    user_id = g.user['cognito_id']
     
     return CartModel.update_cart(user_id, data)
 
@@ -77,7 +77,7 @@ def delete_from_cart(product_id):
     if not product_id:
         return jsonify({'error': 'Product ID is required'}), 400
         
-    user_id = g.user['cognito_user_id']
+    user_id = g.user['cognito_id']
     return CartModel.delete_item(user_id, product_id)
 
 @app.route('/cart', methods=['DELETE'])
@@ -85,7 +85,7 @@ def delete_from_cart(product_id):
 @handle_exceptions
 def delete_cart():
 
-    user_id = g.user['cognito_user_id']
+    user_id = g.user['cognito_id']
     return CartModel.delete_cart(user_id)
 
 @app.route('/cart/metrics/circuit-breakers', methods=['GET'])

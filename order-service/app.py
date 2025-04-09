@@ -27,8 +27,8 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 @app.route('/orders', methods=['POST'])
 @require_auth
 def create_order():
-    user_id = g.user['cognito_user_id']
-    shipping_address = g.user['address']
+    user_id = g.user['cognito_id']
+    shipping_address = 'temp_address'
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor(dictionary=True)
@@ -172,7 +172,7 @@ def get_order_by_orderid(order_id):
 @app.route('/orders/user-order', methods=['GET'])
 @require_auth
 def get_user_orders():
-    user_id = g.user['cognito_user_id']
+    user_id = g.user['cognito_id']
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor(dictionary=True)
