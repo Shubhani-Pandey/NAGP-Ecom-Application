@@ -14,8 +14,11 @@ def get_auth_token():
 def validate_token_with_user_service(token):
     """Validates token with user service and returns user details"""
     try:
+        print('making request to user service with token as :', token)
+        print('making request to:',f"{user_service_url}/users/me")
         headers = {'Authorization': f'Bearer {token}'}
         response = requests.get(f"{user_service_url}/users/me",headers=headers)
+        print(response)
         
         if response.status_code == 200:
             return response.json()
