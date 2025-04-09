@@ -49,7 +49,7 @@ class DecimalEncoder(json.JSONEncoder):
             return obj.isoformat()
         return super(DecimalEncoder, self).default(obj)
     
-@app.route('/products', methods=['POST'])
+@app.route('/products/post', methods=['POST'])
 @require_auth
 def create_product():
     data = request.get_json()
@@ -63,7 +63,7 @@ def create_product():
     cache.delete_memoized(get_products)
     return jsonify({'message': 'Product created successfully'})       
 
-@app.route('/products', methods=['GET'])
+@app.route('/products/get', methods=['GET'])
 @cache.cached(timeout=300)
 def get_products():
     items = ProductModel.get_all_products()
