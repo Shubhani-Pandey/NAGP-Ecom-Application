@@ -17,7 +17,7 @@ class CartModel:
             quantity = cart_data.get('quantity', 1)
             current_time = datetime.now(timezone.utc).isoformat()
 
-            logger.log(product_id, quantity, current_time)
+            logger.info(product_id, quantity, current_time)
             
             # Get product details from product service
             product = get_product_details(product_id)
@@ -425,6 +425,8 @@ class CartModel:
     # Request validation functions
     def validate_cart_data(data):
         """Validate cart creation/update request data"""
+
+        print('validating data')
         if not isinstance(data, dict):
             raise ValueError("Invalid request format")
             
@@ -432,6 +434,7 @@ class CartModel:
             raise ValueError("Product ID is required")
             
         quantity = data.get('quantity', 0)
+        print(data, quantity)
         try:
             quantity = int(quantity)
             if quantity < 0:

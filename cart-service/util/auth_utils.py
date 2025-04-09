@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 user_service_url = 'http://user-service-ecs-connect:5001'
+# user_service_url = 'http://127.0.0.1:5001'
 def get_auth_token():
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):

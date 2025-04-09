@@ -19,8 +19,8 @@ class DynamoDBConn:
     @classmethod
     @circuit_breaker('dynamodb-orders-connection', failure_threshold=5, reset_timeout=60,fallback_function=lambda: None)
     def get_connection(self):
-        if os.environ.get('dynamo_db_secret')=='':
-            os.environ['dynamo_db_secret'] = get_secret(f"dev/dynamodb/config")  
+        if os.environ.get('dynamo_db_secret') is None:
+            os.environ['dynamo_db_secret'] = json.dumps(get_secret(f"dev/dynamodb/config")  )
 
         secret = json.loads(os.environ.get('dynamo_db_secret'))
         print(secret)
@@ -33,10 +33,10 @@ class DynamoDBConn:
     
 def get_product_details(product_id):
     # Assuming product service URL is stored in environment variable
-    logger.log('calling',f"http://product-service-ecs-connect:5002/products/{product_id}")
+    logger.info('calling',f"http://product-service-ecs-connect:5002/products/{product_id}")
     product_service_url = f"http://product-service-ecs-connect:5002/products/{product_id}"
     response = requests.get(product_service_url)
-    logger.log('product response', response)
+    logger.info('product response', response)
     
     print(response.json())
     if response.status_code == 200:

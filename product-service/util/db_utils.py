@@ -14,11 +14,10 @@ class DynamoDB:
     @classmethod
     @circuit_breaker('dynamodb-products-connection', failure_threshold=5, reset_timeout=60,fallback_function=lambda: None)
     def get_connection(self):
-        if os.environ.get('dynamo_db_secret')=='':
-            os.environ['dynamo_db_secret'] = get_secret(f"dev/dynamodb/config") 
+        if os.environ.get('dynamo_db_secret') is None:
+            os.environ['dynamo_db_secret'] = json.dumps(get_secret(f"dev/dynamodb/config"))
 
         secret = json.loads(os.environ.get('dynamo_db_secret'))
-        print(secret)
 
         return boto3.resource('dynamodb',
             region_name=secret['region'],

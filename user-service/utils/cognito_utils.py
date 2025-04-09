@@ -24,10 +24,9 @@ class CognitoClient:
 
     def _initialize(self):
         try:
-
-            if os.environ.get('cognito_secret')=='':
-                os.environ['cognito_secret'] = get_secret('dev/cognito/config')     
-                
+            if os.environ.get('cognito_secret') is None:
+                os.environ["cognito_secret"] = json.dumps(get_secret('dev/cognito/config'))
+            
             self._cognito_config = json.loads(os.environ.get('cognito_secret'))
             self.client = boto3.client('cognito-idp')
         except Exception as e:

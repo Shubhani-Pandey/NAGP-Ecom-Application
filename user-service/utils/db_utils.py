@@ -45,8 +45,8 @@ class DatabasePool:
         """Initialize the connection pool if not already initialized"""
         if self._pool is None:
             try:
-                if os.environ.get('rds_secret')=='':
-                    os.environ['rds_secret'] = get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa")   
+                if os.environ.get('rds_secret') is None:
+                    os.environ['rds_secret'] = json.dumps(get_secret(f"rds!db-d0086fff-7ec8-427d-8070-d6001b9308aa"))
 
                 secret = json.loads(os.environ.get('rds_secret'))
 
