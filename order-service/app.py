@@ -24,7 +24,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     }
 )
 
-@app.route('/orders', methods=['POST'])
+@app.route('/orders/place', methods=['POST'])
 @require_auth
 def create_order():
     user_id = g.user['cognito_id']

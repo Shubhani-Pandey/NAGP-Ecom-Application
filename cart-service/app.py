@@ -31,7 +31,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     }
 )
 
-@app.route('/cart', methods=['POST'])
+@app.route('/cart/create', methods=['POST'])
 @require_auth
 @handle_exceptions
 def create_cart():
@@ -51,7 +51,7 @@ def get_cart():
     user_id = g.user['cognito_id']
     return CartModel.get_cart_by_user_id(user_id)
 
-@app.route('/cart', methods=['PUT'])
+@app.route('/cart/update', methods=['PUT'])
 @require_auth
 @handle_exceptions
 def update_cart():
@@ -74,7 +74,7 @@ def delete_from_cart(product_id):
     user_id = g.user['cognito_id']
     return CartModel.delete_item(user_id, product_id)
 
-@app.route('/cart', methods=['DELETE'])
+@app.route('/cart/delete', methods=['DELETE'])
 @require_auth
 @handle_exceptions
 def delete_cart():
