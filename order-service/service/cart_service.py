@@ -12,7 +12,7 @@ def get_cart_items(auth_header):
             headers['Authorization'] = auth_header
 
         response = requests.get(
-            f"{CART_SERVICE_URL}/user_cart",
+            f"{CART_SERVICE_URL}/cart/user_cart",
             headers=headers,
             timeout=20  # Add timeout for better error handling
         )
@@ -36,7 +36,7 @@ def delete_cart(auth_header):
             headers['Authorization'] = auth_header
 
         response = requests.delete(
-            f"{CART_SERVICE_URL}/cart",
+            f"{CART_SERVICE_URL}/cart/delete",
             headers=headers,
             timeout=20  # Add timeout for better error handling
         )
