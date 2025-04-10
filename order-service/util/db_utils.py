@@ -99,7 +99,7 @@ def get_db_connection():
     finally:
         if conn:
             try:
-                # conn.close()
+                conn.close()
                 logger.debug("Database connection closed")
             except Exception as e:
                 logger.warning(f"Error closing connection: {str(e)}")
