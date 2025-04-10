@@ -99,7 +99,7 @@ def get_db_connection():
     finally:
         if conn:
             try:
-                conn.close()
+                # conn.close()
                 logger.debug("Database connection closed")
             except Exception as e:
                 logger.warning(f"Error closing connection: {str(e)}")
@@ -142,4 +142,4 @@ def init_orders_db():
         raise DatabaseError(f"Database initialization error: {str(e)}")
     finally:
         cursor.close()
-        conn.close()
+        # conn.close()

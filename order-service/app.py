@@ -124,7 +124,7 @@ def create_order():
 
     finally:
         cursor.close()
-        conn.close()
+        # conn.close()
 
 @app.route('/orders/<int:order_id>', methods=['GET'])
 @require_auth
@@ -167,7 +167,7 @@ def get_order_by_orderid(order_id):
         return jsonify({'error': str(e)}), 500
     finally:
         cursor.close()
-        conn.close()
+        # conn.close()
 
 @app.route('/orders/user-order', methods=['GET'])
 @require_auth
@@ -198,7 +198,7 @@ def get_user_orders():
         return jsonify({'error': str(e)}), 500
     finally:
         cursor.close()
-        conn.close()
+        # conn.close()
 
 @app.route('/orders/<int:order_id>/status', methods=['PUT'])
 @require_auth
@@ -233,7 +233,7 @@ def update_order_status(order_id):
         return jsonify({'error': str(e)}), 500
     finally:
         cursor.close()
-        conn.close()
+        # conn.close()
 
 @app.route('/orders/<int:order_id>/cancel', methods=['PUT'])
 @require_auth
@@ -264,7 +264,7 @@ def cancel_order(order_id):
         return jsonify({'error': str(e)}), 500
     finally:
         cursor.close()
-        conn.close()
+        # conn.close()
 
 
 @app.route('/orders/health', methods=['GET'])
@@ -305,7 +305,7 @@ def health_check():
         health_status['status'] = 'unhealthy'
     finally:
         cursor.close()
-        conn.close()
+        # conn.close()
 
     # Check Memory Usage
     try:

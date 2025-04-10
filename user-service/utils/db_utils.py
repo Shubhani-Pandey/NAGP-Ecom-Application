@@ -132,4 +132,4 @@ def init_user_db():
         raise DatabaseError(f"Database initialization error: {str(e)}")
     finally:
         cursor.close()
-        conn.close()
+        # conn.close()

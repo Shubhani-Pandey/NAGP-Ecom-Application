@@ -6,7 +6,7 @@ from utils.db_utils import init_user_db
 from models.user import UserModel
 from flask_swagger_ui import get_swaggerui_blueprint
 from utils.rate_limit import setup_limiter
-from utils.db_utils import get_db_connection
+from utils.db_utils import get_db_connection, DatabaseError
 from utils.circuit_breaker import CircuitBreakerRegistry
 from utils.metrics import MetricsCollector
 from flask_cors import CORS
@@ -228,7 +228,7 @@ def health_check():
         logger.error(f"Database health: {db_healthy}")
     finally:
         cursor.close()
-        conn.close()
+#        conn.close()
 
     try:
         cognito = CognitoClient()
