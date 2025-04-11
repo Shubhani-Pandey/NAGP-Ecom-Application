@@ -46,7 +46,8 @@ class ProductSearch:
                                 "fields": ["name^3", "brand_name^2", "category_name^2"],
                                 "type": "phrase",
                                 "slop": 1,  
-                                "boost": 2 
+                                "boost": 2 ,
+                                "minimum_should_match": "90%" 
                             }
                         },
                         {
@@ -56,7 +57,8 @@ class ProductSearch:
                                 "type": "phrase_prefix",
                                 "slop": 1,
                                 "max_expansions": 10,  
-                                "boost": 1.5
+                                "boost": 1.5,
+                                "minimum_should_match": "90%" 
                             }
                         }
                     ],
